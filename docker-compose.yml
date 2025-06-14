@@ -1,0 +1,52 @@
+services:
+  auth-service:
+    image: auth-service
+    restart: always
+    build:
+      context: ./microservices/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./microservices/auth-service/.env
+    depends_on:
+      - auth-db
+
+  profile-service:
+    image: profile-service
+    restart: always
+    build:
+      context: ./microservices/profile-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./microservices/profile-service/.env
+    depends_on:
+      - profile-db
+
+  auth-db:
+    image: postgres:16
+    restart: always
+    container_name: workout_tracker_auth_db
+    env_file:
+      - ./microservices/auth-service/.env
+    ports:
+      - "9000:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+
+  profile-db:
+    image: postgres:16
+    restart: always
+    container_name: workout_tracker_profiles_db
+    env_file:
+      - ./microservices/profile-service/.env
+    ports:
+      - "9001:5432"
+    volumes:
+      - profile_db_data:/var/lib/postgresql/data
+
+volumes:
+  auth_db_data:
+  profile_db_data:
