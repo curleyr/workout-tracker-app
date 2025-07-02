@@ -82,3 +82,11 @@ Profiles are created automatically during registration via an internal POST requ
    ```bash
    docker-compose up --build
    ```
+
+## Postman Collection for Local Testing
+
+A Postman collection is included at the root of the project to simplify local API testing for the Auth and Profile services.
+
+- File: workout-tracker-app.local.postman_collection.json
+
+Ensure your local services are running via Docker Compose before using the requests.
