@@ -25,6 +25,19 @@ services:
     depends_on:
       - profile-db
 
+  exercise-service:
+    image: exercise-service
+    restart: always
+    build:
+      context: ./microservices/exercise-service
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    env_file:
+      - ./microservices/exercise-service/.env
+    depends_on:
+      - exercise-db
+
   auth-db:
     image: postgres:16
     restart: always
@@ -47,6 +60,18 @@ services:
     volumes:
       - profile_db_data:/var/lib/postgresql/data
 
+  exercise-db:
+    image: postgres:16
+    restart: always
+    container_name: workout_tracker_exercises_db
+    env_file:
+      - ./microservices/exercise-service/.env
+    ports:
+      - "9002:5432"
+    volumes:
+      - exercise_db_data:/var/lib/postgresql/data
+
 volumes:
   auth_db_data:
   profile_db_data:
+  exercise_db_data:
