@@ -143,6 +143,150 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "/exercise",
+			"item": [
+				{
+					"name": "/create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8002/exercise/create",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8002",
+							"path": [
+								"exercise",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{id}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8002/exercise/{id}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8002",
+							"path": [
+								"exercise",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/name/{name}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8002/exercise/name/{name}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8002",
+							"path": [
+								"exercise",
+								"name",
+								"{name}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8002/exercise/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8002",
+							"path": [
+								"exercise",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{id}",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8002/exercise/{id}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8002",
+							"path": [
+								"exercise",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8002/exercise/{id}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8002",
+							"path": [
+								"exercise",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
