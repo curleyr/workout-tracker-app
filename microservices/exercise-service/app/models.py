@@ -4,8 +4,8 @@ from sqlalchemy.sql import func
 
 class Exercise(db.Model):
     __tablename__ = "Exercises"
-    id = db.Column(db.Integer, primary_key=True)        
-    name = db.Column(db.String(100), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)        
+    name = db.Column(db.String(100), nullable=False, unique=True)
     level = db.Column(db.String(50), nullable=False)
     primaryMuscle = db.Column(db.String(50), nullable=False)
     instructions = db.Column(db.String(), nullable=True)
