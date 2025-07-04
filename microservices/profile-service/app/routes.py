@@ -5,38 +5,37 @@ from app.models import Profiles
 from app.utilities import generate_token, decode_token
 
 
-routes_bp = Blueprint('routes', __name__)
+routes_bp = Blueprint("routes", __name__)
 
 
 @routes_bp.route("/create", methods=["POST"])
 def create():
-    create_request = request.get_json()
-    user_id = create_request.get("id")
-    first_name = create_request.get("firstName")
-    last_name = create_request.get("lastName")
-    email = create_request.get("email")
+    data = request.get_json()
+    
+    required_fields = ["id", "firstName", "lastName", "email"]
+    missing_fields = [field for field in required_fields if not data.get(field)]
 
-    # Missing parameters in request
-    if not all([user_id, first_name, last_name, email]):
+    # Missing required parameters in request
+    if missing_fields: 
         return jsonify({
             "status": "ERROR",
-            "message": "Missing fields"
-        }), 400
-
-    # Profile already exists in the db
-    if Profiles.query.filter_by(id=user_id).first():
-        return jsonify({
-            "status": "ERROR",
-            "message": "Profile already exists"
+            "message": f"Missing required fields: {', '.join(missing_fields)}"
         }), 400
 
     try:
+        # Profile already exists in the db
+        if Profiles.query.filter_by(id=data["id"]).first():
+            return jsonify({
+                "status": "ERROR",
+                "message": "Profile already exists"
+            }), 400
+
         # Create profile
         profile = Profiles(
-            id=user_id,
-            firstName=first_name,
-            lastName=last_name,
-            email=email
+            id=data["id"],
+            firstName=data["firstName"],
+            lastName=data["lastName"],
+            email=data["email"]
         )
         db.session.add(profile)
         db.session.commit()
@@ -47,6 +46,7 @@ def create():
         }), 201
 
     except Exception as e:
+        db.session.rollback()
         return jsonify({
             "status": "ERROR",
             "message": "Internal server error"
