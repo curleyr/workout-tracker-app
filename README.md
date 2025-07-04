@@ -14,11 +14,12 @@ This app uses a **microservices architecture** to support modular growth and eas
 
 - **Auth Service**
 - **Profile Service**
+- **Exercise Service**
 
 ### Upcoming:
 
 - Workout Logging Service
-- Exercise Search Service
+- Exercise Search Service Additional Filtering
 - React + TypeScript Frontend
 - Analytics / Progress Dashboard
 
@@ -50,10 +51,21 @@ The profile service maintains user identity data (first name, last name, email).
 
 Profiles are created automatically during registration via an internal POST request from the auth service. Other routes to be built in a future phase.
 
+### Exercise Endpoints
+
+| Endpoint       | Method | Description                |
+| -------------- | ------ | -------------------------- |
+| `/create`      | POST   | Creates a new exercise     |
+| `/{id}`        | GET    | Retrieves exercise by ID   |
+| `/name/{name}` | GET    | Retrieves exercise by name |
+| `/`            | GET    | Retrieves all exercises    |
+| `/{id}`        | PUT    | Updates an exercise        |
+| `/{id}`        | DELETE | Deletes an exercise        |
+
 ## Tech Stack
 
 - **Backend**: Python + Flask, using SQLAlchemy for ORM and PostgreSQL as the database
-- **Microservices**: Auth + Profile services, each with its own PostgreSQL instance
+- **Microservices**: Auth + Profile + Exercise services, each with its own PostgreSQL instance
 - **Authentication**: Custom JWT-based bearer token flow
 - **Containerization**: Docker + Docker Compose
 - **Frontend (planned)**: TypeScript + React
