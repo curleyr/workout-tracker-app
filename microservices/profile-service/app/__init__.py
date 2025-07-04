@@ -18,6 +18,6 @@ def build_app():
 
     # Register blueprints
     from app.routes import routes_bp
-    app.register_blueprint(routes_bp, url_prefix='/profile')
+    app.register_blueprint(routes_bp, url_prefix="/profile")
 
     return app
