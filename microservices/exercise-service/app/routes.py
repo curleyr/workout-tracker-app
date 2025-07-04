@@ -5,54 +5,52 @@ from app.models import Exercise
 from app.utilities import generate_token, decode_token
 
 
-routes_bp = Blueprint('routes', __name__)
+routes_bp = Blueprint("routes", __name__)
 
 
 @routes_bp.route("/create", methods=["POST"])
 def create_exercise():
-    create_request = request.get_json()
-    id = create_request.get("id")
-    name = create_request.get("name")
-    level = create_request.get("level")
-    primary_muscle = create_request.get("primaryMuscle")
-    instructions = create_request.get("instructions")
-    category = create_request.get("category")
+    data = request.get_json()
 
-    # Missing parameters in request
-    if not all([name, level, primary_muscle, instructions, category]):
+    required_fields = ["name", "level", "primaryMuscle", "category"]
+    missing_fields = [field for field in required_fields if not data.get(field)]
+
+    # Missing required parameters in request
+    if missing_fields: 
         return jsonify({
             "status": "ERROR",
-            "message": "Missing fields"
+            "message": f"Missing required fields: {', '.join(missing_fields)}"
         }), 400
-
-    # Exercise already exists in the db
-    if Exercise.query.filter_by(name=name).first():
-        return jsonify({
-            "status": "ERROR",
-            "message": "An exercise with that name already exists"
-        }), 400
-
+    
     try:
+        # Exercise already exists in the db
+        if Exercise.query.filter_by(name=data["name"]).first():
+            return jsonify({
+                "status": "ERROR",
+                "message": "An exercise with that name already exists"
+            }), 400
+        
         # Create exercise
-        exercise = Exercise(
-            name=name,
-            level=level,
-            primaryMuscle=primary_muscle,
-            instructions=instructions,
-            category=category
-        )
-        if id:
-            setattr(exercise, id)
+        exercise_data = {field: data[field] for field in required_fields}
+        exercise = Exercise(**exercise_data)    # Unpack dictionary
+
+        if data.get("id"):  # Optional custom ID
+            exercise.id = data["id"]
+
+        if data.get("instructions"):  # Optional instructions
+            exercise.instructions = data["instructions"]
 
         db.session.add(exercise)
         db.session.commit()
 
         return jsonify({
             "status": "OK",
-            "message": "Exercise created"
+            "message": "Exercise created",
+            "exercise": exercise.serialize
         }), 201
 
     except Exception as e:
+        db.session.rollback()
         return jsonify({
             "status": "ERROR",
             "message": "Internal server error"
@@ -143,7 +141,7 @@ def update_exercise(id):
                 "message": f"Exercise with id {id} not found"
             }), 404
     
-        for field in ['id', 'name', 'level', 'primaryMuscle', 'instructions', 'category']:
+        for field in ["id", "name", "level", "primaryMuscle", "instructions", "category"]:
             if field in data:
                 setattr(exercise, field, data[field])
         db.session.commit()
