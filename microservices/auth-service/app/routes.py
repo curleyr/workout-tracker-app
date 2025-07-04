@@ -6,27 +6,28 @@ from app.utilities import generate_token, decode_token
 import requests
 
 
-routes_bp = Blueprint('routes', __name__)
+routes_bp = Blueprint("routes", __name__)
 # Docker sets up internal DNS so containers can be reached by name
 PROFILE_SERVICE_URL = "http://profile-service:8001/profile/create"
 
 
 @routes_bp.route("/token", methods=["POST"])
 def token():
-    token_request = request.get_json()
-    client_id = token_request.get('client_id')
-    client_secret = token_request.get('client_secret')
+    data = request.get_json()
+
+    required_fields = ["client_id", "client_secret"]
+    missing_fields = [field for field in required_fields if not data.get(field)]
+
+    # Missing required parameters in request
+    if missing_fields: 
+        return jsonify({
+            "status": "ERROR",
+            "message": f"Missing required fields: {', '.join(missing_fields)}"
+        }), 400
 
     try:
-        # Missing parameters in request
-        if not all([client_id, client_secret]):
-            return jsonify({
-                "status": "ERROR",
-                "message": "Missing fields"
-            }), 400
-
         # Generate and return bearer token
-        token = generate_token(token_request.get('client_id'))
+        token = generate_token(data.get("client_id"))
 
         return jsonify({
             "status": "OK",
@@ -44,32 +45,30 @@ def token():
 
 @routes_bp.route("/register", methods=["POST"])
 def register():
-    register_request = request.get_json()
-    username = register_request.get("username")
-    first_name = register_request.get("firstName")
-    last_name = register_request.get("lastName")
-    email = register_request.get("email")
-    password = register_request.get("password")
+    data = request.get_json()
 
-    # Missing parameters in request
-    if not all([username, first_name, last_name, email, password]):
+    required_fields = ["username", "firstName", "lastName", "email", "password"]
+    missing_fields = [field for field in required_fields if not data.get(field)]
+
+    # Missing required parameters in request
+    if missing_fields: 
         return jsonify({
             "status": "ERROR",
-            "message": "Missing fields"
-        }), 400
-
-    # User already exists in the db
-    if Users.query.filter_by(username=username).first():
-        return jsonify({
-            "status": "ERROR",
-            "message": "User already exists"
+            "message": f"Missing required fields: {', '.join(missing_fields)}"
         }), 400
 
     try:
+        # User already exists in the db
+        if Users.query.filter_by(username=data["username"]).first():
+            return jsonify({
+                "status": "ERROR",
+                "message": "User already exists"
+            }), 400
+
         # Create user
         user = Users(
-            username=username,
-            password=generate_password_hash(password)
+            username=data["username"],
+            password=generate_password_hash(data["password"])
         )
         db.session.add(user)
         db.session.commit()
@@ -77,9 +76,9 @@ def register():
         # Make request to profile-service to create profile
         profile_data = {
             "id": user.id,
-            "firstName": first_name,
-            "lastName": last_name,
-            "email": email
+            "firstName": data["firstName"],
+            "lastName": data["lastName"],
+            "email": data["email"]
         }
         response = requests.post(PROFILE_SERVICE_URL, json=profile_data)
 
@@ -116,20 +115,21 @@ def register():
 
 @routes_bp.route("/login", methods=["POST"])
 def login():
-    login_request = request.get_json()
-    username = login_request.get("username")
-    password = login_request.get("password")
+    data = request.get_json()
+
+    required_fields = ["username", "password"]
+    missing_fields = [field for field in required_fields if not data.get(field)]
+
+    # Missing required parameters in request
+    if missing_fields: 
+        return jsonify({
+            "status": "ERROR",
+            "message": f"Missing required fields: {', '.join(missing_fields)}"
+        }), 400
 
     try:
-        # Missing parameters in request
-        if not all([username, password]):
-            return jsonify({
-                "status": "ERROR",
-                "message": "Missing fields"
-            }), 400
-
         # User doesn't exist in the db
-        user = Users.query.filter_by(username=username).first()
+        user = Users.query.filter_by(username=data["username"]).first()
         if not user:
             return jsonify({
                 "status": "ERROR",
@@ -137,7 +137,7 @@ def login():
             }), 400
 
         # Invalid password
-        if not check_password_hash(user.password, password):
+        if not check_password_hash(user.password, data["password"]):
             return jsonify({
                 "status": "ERROR",
                 "message": "Invalid password"
