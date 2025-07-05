@@ -97,7 +97,7 @@ Profiles are created automatically during registration via an internal POST requ
 
 ## Postman Collection for Local Testing
 
-A Postman collection is included at the root of the project to simplify local API testing for the Auth and Profile services.
+A Postman collection is included at the root of the project to simplify local API testing for the Auth, Profile, and Exercise services.
 
 - File: workout-tracker-app.local.postman_collection.json
 
